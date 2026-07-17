@@ -155,7 +155,7 @@ struct BroadcastControlView: View {
         VStack(alignment: .leading, spacing: 4) {
             sectionHeader("Party Sequences")
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     ForEach(StarterSequences.all) { seq in
                         Button {
                             // In party mode every connected droid runs the
@@ -167,8 +167,10 @@ struct BroadcastControlView: View {
                                 presence.sequences.run(seq)
                             }
                         } label: {
-                            Text(seq.name)
-                                .font(.caption.weight(.semibold))
+                            Text(shortSequenceName(seq.name))
+                                .font(.caption)
+                                .lineLimit(1)
+                                .fixedSize(horizontal: true, vertical: false)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
                                 .background(.purple.opacity(0.18))
@@ -179,6 +181,19 @@ struct BroadcastControlView: View {
                 }
                 .padding(.horizontal, 12)
             }
+        }
+    }
+
+    /// Compact per-sequence label so the horizontal row of capsules stays
+    /// readable — the full names (e.g. "BB-9E Dramatic Entrance") are
+    /// awkward at row width.
+    private func shortSequenceName(_ name: String) -> String {
+        switch name {
+        case "BB-9E Dramatic Entrance": return "BB-9E Drama"
+        case "R2 Waddle Dance":          return "R2 Waddle"
+        case "Happy Greeting":           return "Greeting"
+        case "BB-8 Color Spin":          return "BB-8 Spin"
+        default:                         return name
         }
     }
 
