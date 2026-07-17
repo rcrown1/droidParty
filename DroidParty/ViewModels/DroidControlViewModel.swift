@@ -68,8 +68,40 @@ final class DroidControlViewModel: ObservableObject {
     var droidType: DroidType { presence.droidType }
     var sequenceRunner: SequenceRunner { presence.sequences }
 
+    /// Fleet reference, so BB-series tabs can proxy sound playback
+    /// through the appropriate R-series droid's speaker (see soundProxy).
+    private weak var fleet: FleetViewModel?
+
     private let bleManager: BLEManager
     private var cancellables = Set<AnyCancellable>()
+
+    /// The presence whose speaker should actually emit sound for this
+    /// tab. R-series droids emit their own audio. BB-8 has no speaker —
+    /// we route through the connected R2-D2. BB-9E similarly routes
+    /// through R2-Q5. Returns nil if the proxy droid isn't connected.
+    private var soundProxy: DroidPresence? {
+        switch droidType {
+        case .r2d2, .r2q5:
+            return presence.isConnected ? presence : nil
+        case .bb8:
+            return fleet?.presences[.r2d2].flatMap { $0.isConnected ? $0 : nil }
+        case .bb9e:
+            return fleet?.presences[.r2q5].flatMap { $0.isConnected ? $0 : nil }
+        default:
+            return nil
+        }
+    }
+
+    /// The droid type whose sound catalog drives this tab's sound row.
+    /// For R-series, that's the droid itself. For BB-series, it's the
+    /// proxy droid's catalog (its speaker means its sound IDs).
+    var soundCatalogType: DroidType {
+        switch droidType {
+        case .bb8:  return .r2d2
+        case .bb9e: return .r2q5
+        default:    return droidType
+        }
+    }
 
     // Motor sound tracking
     private var isMotorSoundPlaying = false
@@ -79,15 +111,21 @@ final class DroidControlViewModel: ObservableObject {
 
     // MARK: Init
 
-    init(presence: DroidPresence, bleManager: BLEManager) {
+    init(presence: DroidPresence, bleManager: BLEManager, fleet: FleetViewModel? = nil) {
         self.presence = presence
         self.bleManager = bleManager
+        self.fleet = fleet
         self.droidDisplayName = presence.displayName
         setupBindings()
         // If the presence is already connected when the view first appears,
         // pull its capabilities into published state.
         if presence.isConnected, let device = presence.device {
             self.reflectAttached(device: device)
+        } else {
+            // BB-series tabs may still expose the sound row (via proxy)
+            // even before their own droid is connected — populate the
+            // categories eagerly.
+            self.refreshSoundAvailability()
         }
     }
 
@@ -125,6 +163,28 @@ final class DroidControlViewModel: ObservableObject {
         presence.$isReady
             .receive(on: DispatchQueue.main)
             .assign(to: &$isConnected)
+
+        // BB-series tabs need to react to the R-series proxy droid's
+        // connection state changing, so the sound row appears/disappears
+        // as the proxy droid comes and goes.
+        if let proxyType = proxyDroidType(),
+           let proxyPresence = fleet?.presences[proxyType] {
+            proxyPresence.$isReady
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.refreshSoundAvailability()
+                }
+                .store(in: &cancellables)
+        }
+    }
+
+    /// The R-series droid whose speaker this tab proxies through, if any.
+    private func proxyDroidType() -> DroidType? {
+        switch droidType {
+        case .bb8:  return .r2d2
+        case .bb9e: return .r2q5
+        default:    return nil
+        }
     }
 
     private func reflectAttached(device: DroidDevice) {
@@ -134,16 +194,25 @@ final class DroidControlViewModel: ObservableObject {
 
         let caps = presence.capability.currentProfile.capabilitySet
         hasHeadControl = caps.hasHeadPosition
-        hasSoundControl = caps.hasSound
         hasLegControl = caps.hasLegActions
         hasAnimationControl = caps.hasAnimations
-        soundCategories = CapabilityRegistry.operateSoundCategories(for: device.droidType)
         animationCategories = CapabilityRegistry.operateAnimationCategories(for: device.droidType)
 
         let targets = CapabilityRegistry.ledTargets(for: device.droidType)
         ledTargets = targets
         hasLEDControl = !targets.isEmpty
         ledColors = Dictionary(uniqueKeysWithValues: targets.map { ($0, LEDColor.off) })
+
+        refreshSoundAvailability()
+    }
+
+    /// (Re)compute what the sound row should offer. BB-series droids can
+    /// only play sound when their proxy R-series droid is connected. If
+    /// the proxy droid disconnects later we drop the sound row too.
+    private func refreshSoundAvailability() {
+        let categories = CapabilityRegistry.operateSoundCategories(for: soundCatalogType)
+        soundCategories = categories
+        hasSoundControl = (soundProxy != nil) && !categories.isEmpty
     }
 
     private func reflectDetached() {
@@ -170,10 +239,13 @@ final class DroidControlViewModel: ObservableObject {
         joystickVector = vector
         presence.drive.updateJoystick(vector)
 
-        // R2-D2 motor sound
+        // Motor sound — R2-D2 plays through its own speaker; BB-8 also
+        // drives so its motor sound goes through R2-D2 (its proxy). R2-Q5
+        // has the sound in-catalog but it's not part of the driving-sound
+        // vocabulary from SWSphero — leaving that alone.
         if hasSoundControl && !isMotorSoundPlaying && vector.magnitude > deadZone {
-            if droidType == .r2d2 {
-                presence.capability.playSound(id: SoundBank.motorSoundID)
+            if droidType == .r2d2 || droidType == .bb8, let proxy = soundProxy {
+                proxy.capability.playSound(id: SoundBank.motorSoundID)
                 isMotorSoundPlaying = true
             }
         }
@@ -189,7 +261,7 @@ final class DroidControlViewModel: ObservableObject {
         presence.drive.joystickReleased()
 
         if isMotorSoundPlaying {
-            presence.capability.stopSound()
+            soundProxy?.capability.stopSound()
             isMotorSoundPlaying = false
         }
         if isStreamingSensors {
@@ -203,7 +275,7 @@ final class DroidControlViewModel: ObservableObject {
     func emergencyStop() {
         presence.drive.emergencyStop()
         if isMotorSoundPlaying {
-            presence.capability.stopSound()
+            soundProxy?.capability.stopSound()
             isMotorSoundPlaying = false
         }
         if isStreamingSensors {
@@ -234,8 +306,10 @@ final class DroidControlViewModel: ObservableObject {
         presence.drive.calibrateHeading()
         presence.drive.exitCalibrationMode()
         isCalibrating = false
-        if hasSoundControl, let sound = SoundBank.randomSound(category: "Positive", for: droidType) {
-            presence.capability.playSound(id: sound.id)
+        if hasSoundControl,
+           let proxy = soundProxy,
+           let sound = SoundBank.randomSound(category: "Positive", for: soundCatalogType) {
+            proxy.capability.playSound(id: sound.id)
         }
     }
 
@@ -248,15 +322,16 @@ final class DroidControlViewModel: ObservableObject {
 
     func playSoundCategory(_ category: String) {
         guard hasSoundControl,
-              SoundBank.hasPlayableSounds(category: category, for: droidType) else { return }
+              let proxy = soundProxy,
+              SoundBank.hasPlayableSounds(category: category, for: soundCatalogType) else { return }
         lastPlayedCategory = category
-        if let sound = SoundBank.randomSound(category: category, for: droidType) {
-            presence.capability.playSound(id: sound.id)
+        if let sound = SoundBank.randomSound(category: category, for: soundCatalogType) {
+            proxy.capability.playSound(id: sound.id)
         }
     }
 
     func stopSound() {
-        presence.capability.stopSound()
+        soundProxy?.capability.stopSound()
         lastPlayedCategory = nil
     }
 
@@ -277,7 +352,7 @@ final class DroidControlViewModel: ObservableObject {
     // MARK: Direct playback (favorites)
 
     func playSound(id: UInt16) {
-        presence.capability.playSound(id: id)
+        soundProxy?.capability.playSound(id: id)
     }
 
     func playAnimation(id: UInt8) {
@@ -292,8 +367,12 @@ final class DroidControlViewModel: ObservableObject {
     }
 
     func headMoveStarted() {
-        if hasSoundControl && (droidType == .r2d2 || droidType == .r2q5) {
-            presence.capability.playSound(id: SoundBank.headSpinSoundID)
+        // Head-spin sound is R-series only (dome motor). BB-series tabs
+        // don't expose a head slider, so this branch only fires for R2-D2/R2-Q5.
+        if hasSoundControl,
+           (droidType == .r2d2 || droidType == .r2q5),
+           let proxy = soundProxy {
+            proxy.capability.playSound(id: SoundBank.headSpinSoundID)
         }
     }
 
@@ -406,7 +485,7 @@ final class DroidControlViewModel: ObservableObject {
 
     func onDisappear() {
         if isMotorSoundPlaying {
-            presence.capability.stopSound()
+            soundProxy?.capability.stopSound()
             isMotorSoundPlaying = false
         }
         if isStreamingSensors {

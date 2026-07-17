@@ -28,7 +28,7 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             ForEach(FleetViewModel.slotOrder) { type in
                 if let presence = fleet.presences[type] {
-                    DroidControlView(presence: presence, bleManager: bleManager)
+                    DroidControlView(presence: presence, bleManager: bleManager, fleet: fleet)
                         .tabItem {
                             Label {
                                 Text(shortName(type))
@@ -42,7 +42,13 @@ struct ContentView: View {
 
             BroadcastControlView()
                 .tabItem {
-                    Label("Party", systemImage: "party.popper.fill")
+                    Label {
+                        Text("All")
+                    } icon: {
+                        Image("DroidFleet")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
                 }
                 .tag(TabSelection.all)
         }

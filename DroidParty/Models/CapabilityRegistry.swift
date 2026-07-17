@@ -798,9 +798,17 @@ enum CapabilityRegistry {
     }
     
     /// Returns categories suitable for the Operate screen (excludes Test and Special).
+    ///
+    /// R-series droids (R2-D2, R2-Q5) also expose a "BB-8" sound category
+    /// that lives inside their own catalog — those BB-flavored sounds are
+    /// intentionally exposed on the BB-series tabs (which proxy through
+    /// the matching R-series speaker) rather than on the R-series tabs.
     static func operateSoundCategories(for droidType: DroidType) -> [String] {
         let snds = sounds(for: droidType)
-        let excluded: Set<String> = ["Test", "Special"]
+        var excluded: Set<String> = ["Test", "Special"]
+        if droidType == .r2d2 || droidType == .r2q5 {
+            excluded.insert("BB-8")
+        }
         return Array(Set(snds.map(\.category)).subtracting(excluded)).sorted()
     }
 }

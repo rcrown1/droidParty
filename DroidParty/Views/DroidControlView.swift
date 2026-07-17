@@ -17,8 +17,8 @@ struct DroidControlView: View {
     @AppStorage("showLabels") private var showLabels: Bool = false
     @State private var showSettings = false
 
-    init(presence: DroidPresence, bleManager: BLEManager) {
-        _viewModel = StateObject(wrappedValue: DroidControlViewModel(presence: presence, bleManager: bleManager))
+    init(presence: DroidPresence, bleManager: BLEManager, fleet: FleetViewModel) {
+        _viewModel = StateObject(wrappedValue: DroidControlViewModel(presence: presence, bleManager: bleManager, fleet: fleet))
     }
 
     var body: some View {
@@ -245,7 +245,7 @@ struct DroidControlView: View {
                         SoundIconButton(
                             category: category,
                             isActive: viewModel.lastPlayedCategory == category,
-                            droidType: viewModel.droidType,
+                            droidType: viewModel.soundCatalogType,
                             showLabel: showLabels
                         ) {
                             viewModel.playSoundCategory(category)
