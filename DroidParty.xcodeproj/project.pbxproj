@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -73,7 +73,7 @@
 		A7DBBC183EB7A0859E1E3497 /* ConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionState.swift; sourceTree = "<group>"; };
 		B0ACF08A9BC8A59BA9DB53FB /* BLELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLELogger.swift; sourceTree = "<group>"; };
 		BA57AA9627A938B47432F175 /* FleetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetViewModel.swift; sourceTree = "<group>"; };
-		BF92A4FD7F759935ED348D03 /* DroidParty.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DroidParty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF92A4FD7F759935ED348D03 /* DroidParty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DroidParty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C93FAD8A56DCB3A26FDBBABE /* JoystickView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystickView.swift; sourceTree = "<group>"; };
 		CDD5C77C17636C3AF86F4A80 /* DroidProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroidProtocol.swift; sourceTree = "<group>"; };
 		D7A4C79A7722C2AE228C2FAC /* ProtocolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolRegistry.swift; sourceTree = "<group>"; };
@@ -208,7 +208,6 @@
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					9427D946E6A166A359A5A91D = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -223,7 +222,6 @@
 			);
 			mainGroup = FD6331A084F0AAEAC67A2D78;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -296,7 +294,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2PW5M7L6YC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DroidParty/Info.plist;
@@ -321,7 +319,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2PW5M7L6YC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DroidParty/Info.plist;
