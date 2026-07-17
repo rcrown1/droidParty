@@ -83,7 +83,13 @@ struct AnimationIconButton: View {
     }
 
     private var hasContent: Bool {
-        AnimationBank.hasAnimations(category: category, for: droidType)
+        // BB-8 has no onboard animation catalog but DroidParty synthesizes
+        // per-category recipes for it (see BB8AnimationRecipes), so every
+        // category renders as playable.
+        if droidType == .bb8 {
+            return BB8AnimationRecipes.operateCategories.contains(category)
+        }
+        return AnimationBank.hasAnimations(category: category, for: droidType)
     }
 
     var body: some View {

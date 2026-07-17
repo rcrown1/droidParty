@@ -193,8 +193,13 @@ final class DroidControlViewModel: ObservableObject {
         let caps = presence.capability.currentProfile.capabilitySet
         hasHeadControl = caps.hasHeadPosition
         hasLegControl = caps.hasLegActions
-        hasAnimationControl = caps.hasAnimations
-        animationCategories = CapabilityRegistry.operateAnimationCategories(for: device.droidType)
+        // BB-8 has no onboard animation catalog, but we synthesize per-category
+        // animations from roll + LED + proxied sound (see BB8AnimationRecipes).
+        // Every other type derives from its capability set.
+        hasAnimationControl = caps.hasAnimations || device.droidType == .bb8
+        animationCategories = device.droidType == .bb8
+            ? BB8AnimationRecipes.operateCategories
+            : CapabilityRegistry.operateAnimationCategories(for: device.droidType)
 
         let targets = CapabilityRegistry.ledTargets(for: device.droidType)
         ledTargets = targets
@@ -334,16 +339,28 @@ final class DroidControlViewModel: ObservableObject {
     }
 
     func playAnimationCategory(_ category: String) {
-        guard hasAnimationControl,
-              AnimationBank.hasAnimations(category: category, for: droidType) else { return }
+        guard hasAnimationControl else { return }
         lastPlayedAnimationCategory = category
+        if droidType == .bb8 {
+            // Synthesize BB-8 "animation" from a roll + LED + proxied sound recipe.
+            presence.sequences.run(BB8AnimationRecipes.recipe(for: category))
+            return
+        }
+        guard AnimationBank.hasAnimations(category: category, for: droidType) else { return }
         if let anim = AnimationBank.randomAnimation(category: category, for: droidType) {
             presence.capability.playAnimation(id: anim.id)
         }
     }
 
     func stopAnimation() {
-        presence.capability.stopAnimation()
+        // For BB-8 the "animation" is a running SequenceRunner recipe —
+        // cancel it (which stops sound, LEDs, and roll via the runner's
+        // controller.stopAll()).
+        if droidType == .bb8 {
+            presence.sequences.cancel()
+        } else {
+            presence.capability.stopAnimation()
+        }
         lastPlayedAnimationCategory = nil
     }
 

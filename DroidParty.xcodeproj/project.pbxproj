@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -33,6 +33,7 @@
 		C0BC2C796088C9548BD0257D /* SequenceRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E4E188FCEAD06681874509 /* SequenceRunner.swift */; };
 		C4704398AADA9DB8BB6CC53A /* ScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACC1C278691D34DA2E90407 /* ScannerViewModel.swift */; };
 		C8B3E501E1B1812B9B9530AE /* DroidProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD5C77C17636C3AF86F4A80 /* DroidProtocol.swift */; };
+		CF7BD3BA4AD0DDD5F10C11DD /* BB8AnimationRecipes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6492682F8AFB7F91CD42D2 /* BB8AnimationRecipes.swift */; };
 		CFBDE9BEEA37C715D53F6D7E /* ConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DBBC183EB7A0859E1E3497 /* ConnectionState.swift */; };
 		D85B8AFA6A7D04E9D6F4E9C6 /* ControlAtoms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1530D0E01059C71F2C427C3F /* ControlAtoms.swift */; };
 		DAE7E6690E32FCBCA146B0EE /* DroidType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C8ACC7D5FD598D445B3DC4D /* DroidType.swift */; };
@@ -52,6 +53,7 @@
 		363EEC096CCEA99941C7F2B4 /* CapabilityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityController.swift; sourceTree = "<group>"; };
 		38F6D09D7B648B9728632642 /* PacketDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketDecoder.swift; sourceTree = "<group>"; };
 		3AB3316B914325A37ED3EBCA /* DriveState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveState.swift; sourceTree = "<group>"; };
+		3C6492682F8AFB7F91CD42D2 /* BB8AnimationRecipes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BB8AnimationRecipes.swift; sourceTree = "<group>"; };
 		4A0830C23506E8E4DDD150E6 /* SensorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorData.swift; sourceTree = "<group>"; };
 		4DF394570B7E766E3733FD7E /* BroadcastControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastControlView.swift; sourceTree = "<group>"; };
 		592856785195DAB7B55804CC /* JoystickVector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystickVector.swift; sourceTree = "<group>"; };
@@ -73,7 +75,7 @@
 		A7DBBC183EB7A0859E1E3497 /* ConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionState.swift; sourceTree = "<group>"; };
 		B0ACF08A9BC8A59BA9DB53FB /* BLELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLELogger.swift; sourceTree = "<group>"; };
 		BA57AA9627A938B47432F175 /* FleetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetViewModel.swift; sourceTree = "<group>"; };
-		BF92A4FD7F759935ED348D03 /* DroidParty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DroidParty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF92A4FD7F759935ED348D03 /* DroidParty.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DroidParty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C93FAD8A56DCB3A26FDBBABE /* JoystickView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystickView.swift; sourceTree = "<group>"; };
 		CDD5C77C17636C3AF86F4A80 /* DroidProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroidProtocol.swift; sourceTree = "<group>"; };
 		D7A4C79A7722C2AE228C2FAC /* ProtocolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolRegistry.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 		357DEC372C10FDC704B6E51B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				3C6492682F8AFB7F91CD42D2 /* BB8AnimationRecipes.swift */,
 				94984DB4454DA8ECA25B32B8 /* BLEPacket.swift */,
 				7BE78A47D8119A3BC53E426D /* CapabilityModels.swift */,
 				DA29D6BE417F157F1A4ADC9B /* CapabilityRegistry.swift */,
@@ -208,6 +211,7 @@
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					9427D946E6A166A359A5A91D = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -222,6 +226,7 @@
 			);
 			mainGroup = FD6331A084F0AAEAC67A2D78;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -246,6 +251,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF7BD3BA4AD0DDD5F10C11DD /* BB8AnimationRecipes.swift in Sources */,
 				562B15B2569106BADC568BA7 /* BLELogger.swift in Sources */,
 				FAE14B5251B5F1D1DB10A088 /* BLEManager.swift in Sources */,
 				E4156D1F15FC85D825BB1926 /* BLEPacket.swift in Sources */,
@@ -294,7 +300,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2PW5M7L6YC;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DroidParty/Info.plist;
@@ -319,7 +325,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2PW5M7L6YC;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DroidParty/Info.plist;

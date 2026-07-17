@@ -279,14 +279,20 @@ struct BroadcastControlView: View {
                     ForEach(broadcastAnimationCategories, id: \.self) { category in
                         Button {
                             broadcast { presence in
-                                if AnimationBank.hasAnimations(category: category, for: presence.droidType),
-                                   let anim = AnimationBank.randomAnimation(category: category, for: presence.droidType) {
-                                    presence.capability.playAnimation(id: anim.id)
-                                } else {
-                                    // BB-8 has no animation hardware — fall
-                                    // back to a category-tinted LED flash so
-                                    // it participates visibly in the party.
-                                    fallbackLEDPulse(category: category, on: presence)
+                                switch presence.droidType {
+                                case .bb8:
+                                    // BB-8 has no onboard animation catalog — run
+                                    // the synthesized recipe (roll + LEDs + audio
+                                    // via R2-D2 proxy). Same recipes as the BB-8
+                                    // tab's animation buttons.
+                                    presence.sequences.run(BB8AnimationRecipes.recipe(for: category))
+                                default:
+                                    if AnimationBank.hasAnimations(category: category, for: presence.droidType),
+                                       let anim = AnimationBank.randomAnimation(category: category, for: presence.droidType) {
+                                        presence.capability.playAnimation(id: anim.id)
+                                    } else {
+                                        fallbackLEDPulse(category: category, on: presence)
+                                    }
                                 }
                             }
                         } label: {
