@@ -48,7 +48,7 @@ enum CapabilityRegistry {
         case .r2d2:  return r2d2Sounds
         case .r2q5:  return r2q5Sounds
         case .bb9e:  return bb9eSounds
-        case .bb8:   return []
+        case .bb8:   return bb8Sounds
         case .unknownSphero: return []
         }
     }
@@ -755,22 +755,187 @@ enum CapabilityRegistry {
     // MARK: - BB-9E Sounds (curated selection)
     
     /// BB-9E sounds from the BB9E range of the shared Audio enum.
+    // MARK: - BB-8 Sounds (Sphero-authored, played via R2-D2 proxy)
+    //
+    // BB-8 has no speaker; the DroidParty app routes these IDs through the
+    // connected R2-D2's CapabilityController. Categorized to match the same
+    // Alarm/Chatty/Excited/Hey/Laugh/Negative/Positive/Sad buckets the R2
+    // catalog uses so the same button grid works.
+
+    private static let bb8Sounds: [SoundDescriptor] = [
+        // Alarm (11 IDs)
+        SoundDescriptor(id: 218,  name: "Alarm 1",  category: "Alarm"),
+        SoundDescriptor(id: 235,  name: "Alarm 10", category: "Alarm"),
+        SoundDescriptor(id: 254,  name: "Alarm 11", category: "Alarm"),
+        SoundDescriptor(id: 258,  name: "Alarm 12", category: "Alarm"),
+        SoundDescriptor(id: 264,  name: "Alarm 2",  category: "Alarm"),
+        SoundDescriptor(id: 268,  name: "Alarm 3",  category: "Alarm"),
+        SoundDescriptor(id: 272,  name: "Alarm 4",  category: "Alarm"),
+        SoundDescriptor(id: 279,  name: "Alarm 6",  category: "Alarm"),
+        SoundDescriptor(id: 288,  name: "Alarm 7",  category: "Alarm"),
+        SoundDescriptor(id: 296,  name: "Alarm 8",  category: "Alarm"),
+        SoundDescriptor(id: 301,  name: "Alarm 9",  category: "Alarm"),
+        // Boot-up (grouped under Excited so it surfaces on the "wake me up" button)
+        SoundDescriptor(id: 309,  name: "Boot Up",   category: "Excited"),
+        SoundDescriptor(id: 330,  name: "Boot Up 2", category: "Excited"),
+        // Chatty (28 IDs)
+        SoundDescriptor(id: 352,  name: "Chatty 1",  category: "Chatty"),
+        SoundDescriptor(id: 356,  name: "Chatty 10", category: "Chatty"),
+        SoundDescriptor(id: 360,  name: "Chatty 11", category: "Chatty"),
+        SoundDescriptor(id: 368,  name: "Chatty 12", category: "Chatty"),
+        SoundDescriptor(id: 375,  name: "Chatty 13", category: "Chatty"),
+        SoundDescriptor(id: 381,  name: "Chatty 14", category: "Chatty"),
+        SoundDescriptor(id: 390,  name: "Chatty 15", category: "Chatty"),
+        SoundDescriptor(id: 397,  name: "Chatty 16", category: "Chatty"),
+        SoundDescriptor(id: 404,  name: "Chatty 17", category: "Chatty"),
+        SoundDescriptor(id: 410,  name: "Chatty 18", category: "Chatty"),
+        SoundDescriptor(id: 417,  name: "Chatty 19", category: "Chatty"),
+        SoundDescriptor(id: 430,  name: "Chatty 2",  category: "Chatty"),
+        SoundDescriptor(id: 464,  name: "Chatty 20", category: "Chatty"),
+        SoundDescriptor(id: 471,  name: "Chatty 22", category: "Chatty"),
+        SoundDescriptor(id: 479,  name: "Chatty 23", category: "Chatty"),
+        SoundDescriptor(id: 492,  name: "Chatty 24", category: "Chatty"),
+        SoundDescriptor(id: 518,  name: "Chatty 25", category: "Chatty"),
+        SoundDescriptor(id: 525,  name: "Chatty 26", category: "Chatty"),
+        SoundDescriptor(id: 537,  name: "Chatty 27", category: "Chatty"),
+        SoundDescriptor(id: 544,  name: "Chatty 3",  category: "Chatty"),
+        SoundDescriptor(id: 557,  name: "Chatty 4",  category: "Chatty"),
+        SoundDescriptor(id: 570,  name: "Chatty 5",  category: "Chatty"),
+        SoundDescriptor(id: 577,  name: "Chatty 6",  category: "Chatty"),
+        SoundDescriptor(id: 581,  name: "Chatty 7",  category: "Chatty"),
+        SoundDescriptor(id: 587,  name: "Chatty 8",  category: "Chatty"),
+        SoundDescriptor(id: 599,  name: "Chatty 9",  category: "Chatty"),
+        // Misc chatty-flavored (grouped under Chatty)
+        SoundDescriptor(id: 606,  name: "Don't Know", category: "Chatty"),
+        SoundDescriptor(id: 1308, name: "Shortcut",   category: "Chatty"),
+        // Excited (4 IDs + Wow)
+        SoundDescriptor(id: 612,  name: "Excited 1", category: "Excited"),
+        SoundDescriptor(id: 622,  name: "Excited 2", category: "Excited"),
+        SoundDescriptor(id: 630,  name: "Excited 3", category: "Excited"),
+        SoundDescriptor(id: 644,  name: "Excited 4", category: "Excited"),
+        SoundDescriptor(id: 1324, name: "Wow",       category: "Excited"),
+        // Hey (13 IDs)
+        SoundDescriptor(id: 671,  name: "Hey 1",  category: "Hey"),
+        SoundDescriptor(id: 682,  name: "Hey 10", category: "Hey"),
+        SoundDescriptor(id: 686,  name: "Hey 11", category: "Hey"),
+        SoundDescriptor(id: 690,  name: "Hey 12", category: "Hey"),
+        SoundDescriptor(id: 700,  name: "Hey 13", category: "Hey"),
+        SoundDescriptor(id: 724,  name: "Hey 2",  category: "Hey"),
+        SoundDescriptor(id: 732,  name: "Hey 3",  category: "Hey"),
+        SoundDescriptor(id: 734,  name: "Hey 4",  category: "Hey"),
+        SoundDescriptor(id: 739,  name: "Hey 5",  category: "Hey"),
+        SoundDescriptor(id: 743,  name: "Hey 6",  category: "Hey"),
+        SoundDescriptor(id: 747,  name: "Hey 7",  category: "Hey"),
+        SoundDescriptor(id: 753,  name: "Hey 8",  category: "Hey"),
+        SoundDescriptor(id: 757,  name: "Hey 9",  category: "Hey"),
+        // Laugh (2)
+        SoundDescriptor(id: 761,  name: "Laugh 1", category: "Laugh"),
+        SoundDescriptor(id: 764,  name: "Laugh 2", category: "Laugh"),
+        // Negative (30 IDs)
+        SoundDescriptor(id: 787,  name: "Negative 1",  category: "Negative"),
+        SoundDescriptor(id: 792,  name: "Negative 10", category: "Negative"),
+        SoundDescriptor(id: 802,  name: "Negative 11", category: "Negative"),
+        SoundDescriptor(id: 813,  name: "Negative 12", category: "Negative"),
+        SoundDescriptor(id: 825,  name: "Negative 13", category: "Negative"),
+        SoundDescriptor(id: 831,  name: "Negative 14", category: "Negative"),
+        SoundDescriptor(id: 836,  name: "Negative 15", category: "Negative"),
+        SoundDescriptor(id: 859,  name: "Negative 16", category: "Negative"),
+        SoundDescriptor(id: 867,  name: "Negative 17", category: "Negative"),
+        SoundDescriptor(id: 874,  name: "Negative 18", category: "Negative"),
+        SoundDescriptor(id: 888,  name: "Negative 19", category: "Negative"),
+        SoundDescriptor(id: 896,  name: "Negative 2",  category: "Negative"),
+        SoundDescriptor(id: 902,  name: "Negative 20", category: "Negative"),
+        SoundDescriptor(id: 916,  name: "Negative 21", category: "Negative"),
+        SoundDescriptor(id: 927,  name: "Negative 22", category: "Negative"),
+        SoundDescriptor(id: 935,  name: "Negative 23", category: "Negative"),
+        SoundDescriptor(id: 946,  name: "Negative 24", category: "Negative"),
+        SoundDescriptor(id: 953,  name: "Negative 25", category: "Negative"),
+        SoundDescriptor(id: 963,  name: "Negative 26", category: "Negative"),
+        SoundDescriptor(id: 969,  name: "Negative 27", category: "Negative"),
+        SoundDescriptor(id: 983,  name: "Negative 28", category: "Negative"),
+        SoundDescriptor(id: 988,  name: "Negative 29", category: "Negative"),
+        SoundDescriptor(id: 998,  name: "Negative 3",  category: "Negative"),
+        SoundDescriptor(id: 1003, name: "Negative 30", category: "Negative"),
+        SoundDescriptor(id: 1010, name: "Negative 4",  category: "Negative"),
+        SoundDescriptor(id: 1020, name: "Negative 5",  category: "Negative"),
+        SoundDescriptor(id: 1032, name: "Negative 6",  category: "Negative"),
+        SoundDescriptor(id: 1040, name: "Negative 7",  category: "Negative"),
+        SoundDescriptor(id: 1052, name: "Negative 8",  category: "Negative"),
+        SoundDescriptor(id: 1064, name: "Negative 9",  category: "Negative"),
+        // Positive (16)
+        SoundDescriptor(id: 1077, name: "Positive 1",  category: "Positive"),
+        SoundDescriptor(id: 1082, name: "Positive 10", category: "Positive"),
+        SoundDescriptor(id: 1087, name: "Positive 11", category: "Positive"),
+        SoundDescriptor(id: 1092, name: "Positive 12", category: "Positive"),
+        SoundDescriptor(id: 1096, name: "Positive 13", category: "Positive"),
+        SoundDescriptor(id: 1102, name: "Positive 14", category: "Positive"),
+        SoundDescriptor(id: 1109, name: "Positive 15", category: "Positive"),
+        SoundDescriptor(id: 1113, name: "Positive 16", category: "Positive"),
+        SoundDescriptor(id: 1118, name: "Positive 2",  category: "Positive"),
+        SoundDescriptor(id: 1123, name: "Positive 3",  category: "Positive"),
+        SoundDescriptor(id: 1130, name: "Positive 4",  category: "Positive"),
+        SoundDescriptor(id: 1135, name: "Positive 5",  category: "Positive"),
+        SoundDescriptor(id: 1138, name: "Positive 6",  category: "Positive"),
+        SoundDescriptor(id: 1147, name: "Positive 7",  category: "Positive"),
+        SoundDescriptor(id: 1150, name: "Positive 8",  category: "Positive"),
+        SoundDescriptor(id: 1157, name: "Positive 9",  category: "Positive"),
+        // Sad (18)
+        SoundDescriptor(id: 1163, name: "Sad 1",  category: "Sad"),
+        SoundDescriptor(id: 1170, name: "Sad 10", category: "Sad"),
+        SoundDescriptor(id: 1178, name: "Sad 11", category: "Sad"),
+        SoundDescriptor(id: 1186, name: "Sad 12", category: "Sad"),
+        SoundDescriptor(id: 1192, name: "Sad 13", category: "Sad"),
+        SoundDescriptor(id: 1199, name: "Sad 14", category: "Sad"),
+        SoundDescriptor(id: 1205, name: "Sad 15", category: "Sad"),
+        SoundDescriptor(id: 1213, name: "Sad 16", category: "Sad"),
+        SoundDescriptor(id: 1220, name: "Sad 17", category: "Sad"),
+        SoundDescriptor(id: 1230, name: "Sad 18", category: "Sad"),
+        SoundDescriptor(id: 1236, name: "Sad 2",  category: "Sad"),
+        SoundDescriptor(id: 1240, name: "Sad 3",  category: "Sad"),
+        SoundDescriptor(id: 1250, name: "Sad 4",  category: "Sad"),
+        SoundDescriptor(id: 1268, name: "Sad 5",  category: "Sad"),
+        SoundDescriptor(id: 1275, name: "Sad 6",  category: "Sad"),
+        SoundDescriptor(id: 1281, name: "Sad 7",  category: "Sad"),
+        SoundDescriptor(id: 1295, name: "Sad 8",  category: "Sad"),
+        SoundDescriptor(id: 1303, name: "Sad 9",  category: "Sad"),
+    ]
+
+    // MARK: - BB-9E Sounds (Sphero-authored, played via R2-Q5 proxy)
+    //
+    // BB-9E's Sphero library is much smaller than BB-8's (~22 sounds vs 133).
+    // Same category conventions; routed through R2-Q5.
+
     private static let bb9eSounds: [SoundDescriptor] = [
+        // Alarm (5)
         SoundDescriptor(id: 1329, name: "Alarm 1", category: "Alarm"),
-        SoundDescriptor(id: 1340, name: "Alarm 2", category: "Alarm"),
-        SoundDescriptor(id: 1360, name: "Chatty 1", category: "Chatty"),
-        SoundDescriptor(id: 1380, name: "Chatty 2", category: "Chatty"),
-        SoundDescriptor(id: 1400, name: "Excited 1", category: "Emotion"),
-        SoundDescriptor(id: 1420, name: "Excited 2", category: "Emotion"),
-        SoundDescriptor(id: 1440, name: "Greetings", category: "Emotion"),
-        SoundDescriptor(id: 1460, name: "Hey 1", category: "Response"),
-        SoundDescriptor(id: 1480, name: "Laugh", category: "Emotion"),
-        SoundDescriptor(id: 1500, name: "Negative 1", category: "Response"),
-        SoundDescriptor(id: 1520, name: "Positive 1", category: "Response"),
-        SoundDescriptor(id: 1540, name: "Sad 1", category: "Emotion"),
-        SoundDescriptor(id: 1560, name: "Scared", category: "Emotion"),
-        SoundDescriptor(id: 1580, name: "Surprised", category: "Emotion"),
-        SoundDescriptor(id: 1600, name: "Understood", category: "Response"),
+        SoundDescriptor(id: 1347, name: "Alarm 2", category: "Alarm"),
+        SoundDescriptor(id: 1363, name: "Alarm 3", category: "Alarm"),
+        SoundDescriptor(id: 1375, name: "Alarm 4", category: "Alarm"),
+        SoundDescriptor(id: 1384, name: "Alarm 5", category: "Alarm"),
+        // Chatty (2)
+        SoundDescriptor(id: 1394, name: "Chatty 1", category: "Chatty"),
+        SoundDescriptor(id: 1408, name: "Chatty 2", category: "Chatty"),
+        // Excited (3)
+        SoundDescriptor(id: 1432, name: "Excited 1", category: "Excited"),
+        SoundDescriptor(id: 1442, name: "Excited 2", category: "Excited"),
+        SoundDescriptor(id: 1463, name: "Excited 3", category: "Excited"),
+        // Hey (2)
+        SoundDescriptor(id: 1476, name: "Hey 1", category: "Hey"),
+        SoundDescriptor(id: 1486, name: "Hey 2", category: "Hey"),
+        // Negative (4)
+        SoundDescriptor(id: 1494, name: "Negative 1", category: "Negative"),
+        SoundDescriptor(id: 1505, name: "Negative 2", category: "Negative"),
+        SoundDescriptor(id: 1516, name: "Negative 3", category: "Negative"),
+        SoundDescriptor(id: 1523, name: "Negative 4", category: "Negative"),
+        // Positive (5)
+        SoundDescriptor(id: 1531, name: "Positive 1", category: "Positive"),
+        SoundDescriptor(id: 1549, name: "Positive 2", category: "Positive"),
+        SoundDescriptor(id: 1558, name: "Positive 3", category: "Positive"),
+        SoundDescriptor(id: 1571, name: "Positive 4", category: "Positive"),
+        SoundDescriptor(id: 1583, name: "Positive 5", category: "Positive"),
+        // Sad (2)
+        SoundDescriptor(id: 1592, name: "Sad 1", category: "Sad"),
+        SoundDescriptor(id: 1600, name: "Sad 2", category: "Sad"),
     ]
     
     // MARK: - Animation Categories

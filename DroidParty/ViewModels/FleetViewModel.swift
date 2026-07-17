@@ -270,6 +270,26 @@ final class FleetViewModel: ObservableObject {
 
     // MARK: Broadcast
 
+    /// Returns the CapabilityController whose speaker actually plays audio
+    /// for a given droid type. R-series droids emit their own audio; BB-8
+    /// routes through R2-D2 and BB-9E routes through R2-Q5. Returns nil
+    /// if the target speaker droid isn't connected.
+    func soundController(for type: DroidType) -> CapabilityController? {
+        switch type {
+        case .r2d2, .r2q5:
+            guard let p = presences[type], p.isConnected else { return nil }
+            return p.capability
+        case .bb8:
+            guard let p = presences[.r2d2], p.isConnected else { return nil }
+            return p.capability
+        case .bb9e:
+            guard let p = presences[.r2q5], p.isConnected else { return nil }
+            return p.capability
+        default:
+            return nil
+        }
+    }
+
     /// Fan an action out to every currently-ready presence, optionally
     /// filtered by droid family.
     func broadcast(family: DroidFamily? = nil, _ action: (DroidPresence) -> Void) {

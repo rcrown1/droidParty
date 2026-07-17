@@ -93,14 +93,12 @@ final class DroidControlViewModel: ObservableObject {
     }
 
     /// The droid type whose sound catalog drives this tab's sound row.
-    /// For R-series, that's the droid itself. For BB-series, it's the
-    /// proxy droid's catalog (its speaker means its sound IDs).
+    /// Each droid type has its own Sphero-authored library — the BB catalogs
+    /// are distinct from the R2 catalogs. Playback of a BB-catalog sound
+    /// still routes through the R-series proxy (see soundProxy) because
+    /// BB-series droids have no speaker.
     var soundCatalogType: DroidType {
-        switch droidType {
-        case .bb8:  return .r2d2
-        case .bb9e: return .r2q5
-        default:    return droidType
-        }
+        droidType
     }
 
     // Motor sound tracking

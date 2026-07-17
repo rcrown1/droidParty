@@ -44,18 +44,28 @@ struct SoundDescriptor: Identifiable, Hashable, Sendable {
     var d2Rating: Int = 0
     /// Quality rating on R2-Q5: 0=silent, 1=blip, 2=short, 3=rich, 9=test-only
     var q5Rating: Int = 0
+    /// Quality rating on BB-8. BB-8 has no speaker; the sound actually plays
+    /// on its R2-D2 proxy, but the entry lives in the BB-8 catalog so the
+    /// UI can categorize/select it. Default 3 (rich) — BB-8's canonical
+    /// sound library is small and every entry is worth surfacing.
+    var bb8Rating: Int = 3
+    /// Quality rating on BB-9E. Same story: BB-9E has no speaker; sounds
+    /// are played by R2-Q5 proxy. Default 3 (rich).
+    var bb9eRating: Int = 3
     /// If true, this sound should not appear in the sound menu (e.g. motor, head spin).
     /// It is played contextually by the system.
     var isContextual: Bool = false
-    
+
     var displayName: String { name }
     var displayID: String { String(format: "0x%04X (%d)", id, id) }
-    
+
     /// Returns the quality rating for a specific droid type.
     func rating(for droidType: DroidType) -> Int {
         switch droidType {
         case .r2d2: return d2Rating
         case .r2q5: return q5Rating
+        case .bb8:  return bb8Rating
+        case .bb9e: return bb9eRating
         default: return 0
         }
     }

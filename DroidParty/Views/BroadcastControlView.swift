@@ -206,12 +206,7 @@ struct BroadcastControlView: View {
                 HStack(spacing: 6) {
                     ForEach(broadcastSoundCategories, id: \.self) { category in
                         Button {
-                            broadcast { presence in
-                                let type = presence.droidType
-                                guard SoundBank.hasPlayableSounds(category: category, for: type),
-                                      let sound = SoundBank.randomSound(category: category, for: type) else { return }
-                                presence.capability.playSound(id: sound.id)
-                            }
+                            playPartySound(category: category)
                         } label: {
                             Text(category)
                                 .font(.caption)
@@ -223,7 +218,7 @@ struct BroadcastControlView: View {
                         }
                     }
                     Button {
-                        broadcast { $0.capability.stopSound() }
+                        stopPartySound()
                     } label: {
                         Image(systemName: "speaker.slash.fill")
                             .font(.caption)
@@ -243,7 +238,35 @@ struct BroadcastControlView: View {
     /// at least one droid's catalog. We stick to the union so a user tap
     /// can pick a sound for at least one droid regardless of filter.
     private var broadcastSoundCategories: [String] {
-        ["Happy", "Excited", "Positive", "Emotion", "Alert", "Alarm", "Chatty", "Sad", "Negative"]
+        ["Excited", "Positive", "Hey", "Chatty", "Laugh", "Sad", "Negative", "Alarm"]
+    }
+
+    /// Broadcast a party-sound category. Each droid uses its OWN catalog
+    /// so BB-8 plays BB-8 sounds (routed through R2-D2's speaker) and
+    /// BB-9E plays BB-9E sounds (through R2-Q5). We dedupe on the target
+    /// speaker so R2-D2 doesn't fire twice when both R2-D2 and BB-8 are
+    /// connected — BB-8's sound would truncate R2-D2's.
+    private func playPartySound(category: String) {
+        var playedControllers: Set<ObjectIdentifier> = []
+        fleet.broadcast(family: familyFilter.droidFamily) { presence in
+            let type = presence.droidType
+            guard SoundBank.hasPlayableSounds(category: category, for: type),
+                  let sound = SoundBank.randomSound(category: category, for: type),
+                  let controller = fleet.soundController(for: type) else { return }
+            let key = ObjectIdentifier(controller)
+            guard playedControllers.insert(key).inserted else { return }
+            controller.playSound(id: sound.id)
+        }
+    }
+
+    private func stopPartySound() {
+        var stopped: Set<ObjectIdentifier> = []
+        fleet.broadcast(family: familyFilter.droidFamily) { presence in
+            guard let controller = fleet.soundController(for: presence.droidType) else { return }
+            let key = ObjectIdentifier(controller)
+            guard stopped.insert(key).inserted else { return }
+            controller.stopSound()
+        }
     }
 
     // MARK: Party animations
