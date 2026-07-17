@@ -30,11 +30,7 @@ struct ContentView: View {
                 if let presence = fleet.presences[type] {
                     DroidControlView(presence: presence, bleManager: bleManager, fleet: fleet)
                         .tabItem {
-                            Label {
-                                Text(shortName(type))
-                            } icon: {
-                                tabIcon(for: type, presence: presence)
-                            }
+                            Text(shortName(type))
                         }
                         .tag(TabSelection.droid(type))
                 }
@@ -42,13 +38,7 @@ struct ContentView: View {
 
             BroadcastControlView()
                 .tabItem {
-                    Label {
-                        Text("All")
-                    } icon: {
-                        Image("DroidFleet")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }
+                    Text("All")
                 }
                 .tag(TabSelection.all)
         }
@@ -64,18 +54,6 @@ struct ContentView: View {
         case .r2d2: return "R2-D2"
         case .r2q5: return "R2-Q5"
         default:    return type.displayName
-        }
-    }
-
-    @ViewBuilder
-    private func tabIcon(for type: DroidType, presence: DroidPresence) -> some View {
-        if let imageName = type.imageName {
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .opacity(presence.isConnected ? 1 : 0.5)
-        } else {
-            Image(systemName: "questionmark.circle")
         }
     }
 }
