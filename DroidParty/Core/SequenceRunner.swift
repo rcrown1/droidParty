@@ -29,7 +29,14 @@ final class SequenceRunner: ObservableObject {
     private let controller: CapabilityController
     private let logger: BLELogger
     private var runTask: Task<Void, Never>?
-    
+
+    /// Optional secondary CapabilityController that receives sound-related
+    /// steps (playSound / stopSound / setVolume) when the primary droid
+    /// has no speaker. Used in DroidParty to route BB-8's sequence audio
+    /// through R2-D2, and BB-9E's through R2-Q5. When nil, sound steps
+    /// go to the primary controller (which is the normal single-droid case).
+    var soundProxy: CapabilityController?
+
     init(controller: CapabilityController, logger: BLELogger? = nil) {
         self.controller = controller
         self.logger = logger ?? BLELogger.shared
@@ -97,17 +104,19 @@ final class SequenceRunner: ObservableObject {
     // MARK: - Step Execution
     
     private func executeStep(_ step: SequenceStep) {
+        // Sound steps route through soundProxy when set (see property doc).
+        let audioController = soundProxy ?? controller
         switch step {
         case .playAnimation(let id):
             controller.playAnimation(id: id)
         case .stopAnimation:
             controller.stopAnimation()
         case .playSound(let id):
-            controller.playSound(id: id)
+            audioController.playSound(id: id)
         case .stopSound:
-            controller.stopSound()
+            audioController.stopSound()
         case .setVolume(let vol):
-            controller.setVolume(vol)
+            audioController.setVolume(vol)
         case .setLEDs(let mask, let values):
             controller.setLEDs(mask: mask, values: values)
         case .setHeadPosition(let angle):

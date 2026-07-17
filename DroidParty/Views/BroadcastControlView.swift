@@ -154,26 +154,31 @@ struct BroadcastControlView: View {
     private var partySequenceRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             sectionHeader("Party Sequences")
-            HStack(spacing: 8) {
-                ForEach(StarterSequences.all) { seq in
-                    Button {
-                        broadcast { presence in
-                            if StarterSequences.compatible(with: presence.droidType).contains(where: { $0.id == seq.id }) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(StarterSequences.all) { seq in
+                        Button {
+                            // In party mode every connected droid runs the
+                            // sequence. Steps the droid can't perform become
+                            // safe no-ops in its controllers, and audio steps
+                            // are proxied through the BB→R mapping wired in
+                            // FleetViewModel.
+                            broadcast { presence in
                                 presence.sequences.run(seq)
                             }
+                        } label: {
+                            Text(seq.name)
+                                .font(.caption.weight(.semibold))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(.purple.opacity(0.18))
+                                .foregroundStyle(.purple)
+                                .clipShape(Capsule())
                         }
-                    } label: {
-                        Text(seq.name)
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(.purple.opacity(0.18))
-                            .foregroundStyle(.purple)
-                            .clipShape(Capsule())
                     }
                 }
+                .padding(.horizontal, 12)
             }
-            .padding(.horizontal, 12)
         }
     }
 
@@ -236,9 +241,14 @@ struct BroadcastControlView: View {
                     ForEach(broadcastAnimationCategories, id: \.self) { category in
                         Button {
                             broadcast { presence in
-                                guard AnimationBank.hasAnimations(category: category, for: presence.droidType) else { return }
-                                if let anim = AnimationBank.randomAnimation(category: category, for: presence.droidType) {
+                                if AnimationBank.hasAnimations(category: category, for: presence.droidType),
+                                   let anim = AnimationBank.randomAnimation(category: category, for: presence.droidType) {
                                     presence.capability.playAnimation(id: anim.id)
+                                } else {
+                                    // BB-8 has no animation hardware — fall
+                                    // back to a category-tinted LED flash so
+                                    // it participates visibly in the party.
+                                    fallbackLEDPulse(category: category, on: presence)
                                 }
                             }
                         } label: {
@@ -270,6 +280,41 @@ struct BroadcastControlView: View {
 
     private var broadcastAnimationCategories: [String] {
         ["Happy", "Excited", "Curious", "Sass", "Angry", "Scared", "Action"]
+    }
+
+    /// Color that stands in for an emotion category when a droid lacks
+    /// onboard animations (currently only BB-8).
+    private func categoryColor(_ category: String) -> LEDColor {
+        switch category {
+        case "Happy", "Excited": return LEDColor(r: 0,   g: 255, b: 0)     // green
+        case "Angry":            return LEDColor(r: 255, g: 0,   b: 0)     // red
+        case "Scared":           return LEDColor(r: 255, g: 255, b: 0)     // yellow
+        case "Curious":          return LEDColor(r: 0,   g: 128, b: 255)   // blue
+        case "Sass":             return LEDColor(r: 200, g: 0,   b: 200)   // magenta
+        case "Action":           return LEDColor(r: 255, g: 255, b: 255)   // white
+        default:                 return LEDColor(r: 255, g: 128, b: 0)     // orange
+        }
+    }
+
+    /// Two-blink LED pulse in the category color, then black. Runs on the
+    /// droid's own LEDs so BB-8 participates in party animations visibly
+    /// even though it has no animation catalog.
+    private func fallbackLEDPulse(category: String, on presence: DroidPresence) {
+        let targets = CapabilityRegistry.ledTargets(for: presence.droidType)
+        guard !targets.isEmpty else { return }
+        let color = categoryColor(category)
+        Task { @MainActor in
+            for _ in 0..<2 {
+                for t in targets {
+                    presence.capability.setRGBLED(target: t, color: color)
+                }
+                try? await Task.sleep(for: .milliseconds(220))
+                for t in targets {
+                    presence.capability.setRGBLED(target: t, color: .off)
+                }
+                try? await Task.sleep(for: .milliseconds(160))
+            }
+        }
     }
 
     // MARK: Party lights

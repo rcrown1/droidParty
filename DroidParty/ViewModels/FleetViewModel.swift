@@ -123,6 +123,16 @@ final class FleetViewModel: ObservableObject {
         for type in FleetViewModel.slotOrder {
             built[type] = DroidPresence(droidType: type, bleManager: bleManager)
         }
+        // BB-series droids have no speaker — their SequenceRunner routes
+        // playSound/stopSound/setVolume through the matching R-series
+        // droid's capability controller instead. Wired once at init because
+        // presences live for the app's lifetime.
+        if let bb8 = built[.bb8], let r2d2 = built[.r2d2] {
+            bb8.sequences.soundProxy = r2d2.capability
+        }
+        if let bb9e = built[.bb9e], let r2q5 = built[.r2q5] {
+            bb9e.sequences.soundProxy = r2q5.capability
+        }
         self.presences = built
         self.knownDroids = FleetViewModel.loadKnownDroids(key: knownDroidsKey)
         setupBindings()
